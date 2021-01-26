@@ -1,0 +1,36 @@
+{
+  "name": "holdem-strings",
+  "version": "0.0.1",
+  "description": "Apply filters and compressions to Holdem hand string representations.",
+  "main": "src/HoldemStrings.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha -r esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idontchop/holdem-strings.git"
+  },
+  "keywords": [
+    "Holdem"
+  ],
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "author": "Nathan Dunn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/idontchop/holdem-strings/issues"
+  },
+  "homepage": "https://github.com/idontchop/holdem-strings#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.10"
+  },
+  "dependencies": {
+    "esm": "^3.2.25"
+  }
+}
