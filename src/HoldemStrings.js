@@ -2,7 +2,7 @@
 const HoldemStrings = {
 
     rankOrder: ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'],
-    rank: (rankCharacter) => HoldemStrings.rankOrder.indexOf(rankCharacter),
+    rank: (rankCharacter) => HoldemStrings.rankOrder.indexOf(rankCharacter.toUpperCase()),
     rankRegex: /^([akqjt0-9])(?!\1)[akqjt0-9]([os]\+?){1}$|^([akqjt0-9])\3$/gmi, 
     // matches: "TT", "AKo", "AKs+","KAo+" (last could be error), doesn't match: "22+" "22o" "TTo" "TTo+", "AK"
     
@@ -25,9 +25,19 @@ const HoldemStrings = {
      */
     verifyArrayWithErrors: function (arrayHands) {
 
+        const convertUpper = (e) => {
+            let n = ""
+            n += e.charAt(0).toUpperCase()
+            n += e.charAt(1).toUpperCase()
+            n += e.slice(2)
+            return n
+        }
+
         // strip malformed
-        let goodArray = arrayHands.filter( e => e.match(this.rankRegex))
-        let badArray = arrayHands.filter(e => !e.match(this.rankRegex))
+        let goodArray = arrayHands.filter( e => e.match(this.rankRegex)).map (convertUpper)
+        let badArray = arrayHands.filter(e => !e.match(this.rankRegex)).map (convertUpper)
+
+        // make sure only first two characters are uppercase
 
         // reorder
         goodArray = goodArray.map( e => {
@@ -104,7 +114,25 @@ const HoldemStrings = {
             }
         })
 
-        return newArray
+        return newArray.sort( (a, b) => {
+            let astr = 0
+            let bstr = 0
+            if (a.charAt(0) === a.charAt(1)) {
+                astr += 1000
+            }
+            if (b.charAt(0) === b.charAt(1)) {
+                bstr += 1000
+            }
+
+            astr += HoldemStrings.rank(a.charAt(0))*20 + HoldemStrings.rank(a.charAt(1))
+            bstr += HoldemStrings.rank(b.charAt(0))*20 + HoldemStrings.rank(b.charAt(1))
+
+            
+            astr += (a.slice(-1) === '+') ? 500 : 0
+            bstr += (b.slice(-1) === '+') ? 500 : 0
+
+            return ( astr < bstr ) ? 1 : -1
+        })
     },
 
     /**
