@@ -51,9 +51,120 @@ const HoldemStrings = {
      * 
      * @param {array of strings} arrayHands 
      */
-    compressString: function (arrayHands) {
+    compressArray: function (arrayHands) {
 
+        let array = HoldemStrings.verifyArray(arrayHands)
+        array = HoldemStrings.expandArray(array)
+
+        // for faster coding
+        let r = HoldemStrings.rankOrder
+ 
+        //
+        let newArray = []
+
+        // pairs
+        let lowest = r.length
+        for(let i = r.length-1; i >= 0; i--) {
+            if ( array.includes(r[i] + r[i])) {
+                if (lowest === i+1) {
+                    lowest = i
+                }
+                else {
+                    newArray.push(r[i] + r[i])
+                }
+            }
+        }
+
+        if (lowest < r.length-1) {
+            newArray.push("" + r[lowest] + r[lowest] + '+')
+        } else if ( lowest === r.length-1) {
+            newArray.push("" + r[lowest] + r[lowest])
+        }
+
+        // suited, offsuit
+        ['o', 's'].forEach( o => {
+            
+            for (let i = r.length-1; i >= 0; i--) {
+                lowest = i
+                for ( let s = i-1; s >= 0; s--) {
+                    if ( array.includes(r[i] + r[s] + o)) {
+                        if (lowest === s+1) {
+                            lowest = s
+                        } else {
+                            newArray.push(r[i] + r[s] + o)
+                        }
+                    }
+                }
+
+                if (lowest < i-1) {
+                    newArray.push(r[i] + r[lowest] + o + '+')
+                } else if ( lowest === i-1) {
+                    newArray.push(r[i] + r[lowest] + o)
+                }
+            }
+        })
+
+        return newArray
+    },
+
+    /**
+     * Takes a single range such as ATs+ and returns all individual ranges
+     * ATs, AJs, AQs, AKs
+     * 
+     * Returns Array
+     * 
+     * @param {String} range 
+     */
+    expandRange: function (range) {
+        if (range.length < 3 ||
+            range.slice(-1) !== '+' ||
+            HoldemStrings.rank(range.charAt(0)) === -1 ||
+            HoldemStrings.rank(range.charAt(1)) === -1 ) {
+            return [] 
+        }
+
+        let a = []
+        
+        let lastChar = (range.slice(-2,-1) === 'o' || range.slice(-2,-1) === 's') ? range.slice(-2,-1) : "";
+
+        // pairs
+        if (range.charAt(0) == range.charAt(1)) {
+            for(let i = HoldemStrings.rank(range.charAt(0)); i < HoldemStrings.rankOrder.length; i++) {
+                a.push("" + HoldemStrings.rankOrder[i] + HoldemStrings.rankOrder[i])
+            }
+        } else {
+            for ( let i = HoldemStrings.rank(range.charAt(1)); i < HoldemStrings.rank(range.charAt(0)); i++) {
+                a.push("" + range.charAt(0) + HoldemStrings.rankOrder[i] + lastChar);
+            }
+        }
+
+        return a;
+
+    },
+
+    /**
+     * Takes Array of hand ranges, expands any that have '+'
+     * Removes duplicates.
+     * 
+     * @param {Array of Strings} arrayHands 
+     */
+    expandArray: function (arrayHands) {
+
+        let a = new Set()
+
+        arrayHands.forEach( e => {
+            if (e.slice(-1) === '+') {
+                HoldemStrings.expandRange(e).forEach( i => {
+                    a.add(i)
+                })
+            } else {
+                a.add(e)
+            }
+        })
+
+        return Array.from(a)
     }
+    
 
 };
 
