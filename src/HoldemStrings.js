@@ -3,7 +3,7 @@ const HoldemStrings = {
 
     rankOrder: ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'],
     rank: (rankCharacter) => HoldemStrings.rankOrder.indexOf(rankCharacter.toUpperCase()),
-    rankRegex: /^([akqjt0-9])(?!\1)[akqjt0-9]([os]\+?){1}$|^([akqjt0-9])\3$/gmi,
+    rankRegex: /^([akqjt0-9])(?!\1)[akqjt0-9]([os]\+?){1}$|^([akqjt0-9])\3\+?$/gmi,
     version: "0.0.2",
     // matches: "TT", "AKo", "AKs+","KAo+" (last could be error), doesn't match: "22+" "22o" "TTo" "TTo+", "AK"
     
@@ -192,6 +192,16 @@ const HoldemStrings = {
         })
 
         return Array.from(a)
+    },
+
+    /**
+     * Takes a hand string, assumes seperated by commas and returns an array of each hand.
+     * Returns array after passing through verifyArray
+     * @param {String} handString 
+     */
+    stringToArray: function (handString) {
+        let array = handString.split(",")
+        return this.verifyArrayWithErrors(array)
     }
     
 
